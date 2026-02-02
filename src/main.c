@@ -15,6 +15,7 @@
 */
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "draw.h"
 #include "cast.h"
@@ -49,43 +50,41 @@ void InitializeStructures(player_t* p)
     p->posX = p->posY = 3;
     p->angX = -1;
     p->angY = 0;
+
+    p->planeX = 0;
+    p->planeY = 0.66;
 }
 
 void PlayerMovement(player_t* pobj)
 {
     float moveSpeed = 5 * GetFrameTime();
     float rotSpeed = 2.5 * GetFrameTime();
+
     int testX, testY;
 
     // FORWARDS/BACKWARDS
     if (IsKeyDown(KEY_W))
     {
-        testX = (int)(pobj->posX) + pobj->angX * moveSpeed;
-        testY = (int)(pobj->posY);
+        testX = (int)((pobj->posX) + (pobj->angX * moveSpeed));
+        testY = (int)((pobj->posY) + (pobj->angY * moveSpeed));
 
         if(worldMap[testX][testY] == 0) 
-            pobj->posX += pobj->angX * moveSpeed;
+        {
+            pobj->posX += (pobj->angX * moveSpeed);
+            pobj->posY += (pobj->angY * moveSpeed);
+        }
     }
     if (IsKeyDown(KEY_S))
     {
-        testX = (int)(pobj->posX) - pobj->angX * moveSpeed;
-        testY = (int)(pobj->posY);
+        testX = (int)((pobj->posX) - (pobj->angX * moveSpeed));
+        testY = (int)((pobj->posY) - (pobj->angY * moveSpeed));
 
         if(worldMap[testX][testY] == 0) 
-            pobj->posX -= pobj->angX * moveSpeed;
+        {
+            pobj->posX -= (pobj->angX * moveSpeed);
+            pobj->posY -= (pobj->angY * moveSpeed);
+        }
     }
-
-    // STRAFE
-    if (IsKeyDown(KEY_A))
-    {
-        
-    }
-    if (IsKeyDown(KEY_D))
-    {
-
-    }
-
-    
 
     // TURN
     if (IsKeyDown(KEY_J))
