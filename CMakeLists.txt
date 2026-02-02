@@ -42,6 +42,8 @@ target_link_options(ASAN::ASAN INTERFACE -fsanitize=address,undefined)
 
 set(SOURCES
 	${PROJECT_SOURCE_DIR}/src/main.c
+  ${PROJECT_SOURCE_DIR}/src/cast.c
+  ${PROJECT_SOURCE_DIR}/src/draw.c
 )
 
 # BUILD TARGET CONFIG

@@ -14,6 +14,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
 typedef struct player {
     // int = whole tile position, frac = pos within tile
     float posX, posY;

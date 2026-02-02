@@ -14,4 +14,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
+#include <stdint.h>
+
+#define WORLD_WIDTH 16
+#define WORLD_HEIGHT 16
+
 extern uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT];

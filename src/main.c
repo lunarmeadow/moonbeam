@@ -16,12 +16,12 @@
 
 #include <stdint.h>
 
-#include "render/draw.h"
+#include "draw.h"
+#include "cast.h"
+#include "player.h"
+#include "main.h"
 
 #include "raylib.h"
-
-#define WORLD_WIDTH 16
-#define WORLD_HEIGHT 16
 
 uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT] =
 {
@@ -43,7 +43,7 @@ uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT] =
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-void InitializeStructures(player_t* p);
+void InitializeStructures(player_t* p)
 {
     p->posX = p->posY = 3;
     p->angX = -1;
@@ -53,10 +53,10 @@ void InitializeStructures(player_t* p);
 int main()
 {
     // use dependency injection to avoid ugly globals when sharing data.
-    player_t* pobj;
-    render_t* rVars;
+    player_t pobj;
+    render_t rVars;
 
-    InitializeStructures(pobj);
+    InitializeStructures(&pobj);
 
     InitWindow(screenWidth, screenHeight, "Test Window");
     SetTargetFPS(refreshRate);
@@ -67,7 +67,7 @@ int main()
         
         ClearBackground(RAYWHITE);
 
-        RayLoop(pobj, rVars);
+        RayLoop(&pobj, &rVars);
         
         EndDrawing();
     }

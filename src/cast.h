@@ -14,4 +14,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-void RayLoop(player_t* pobj, render_t* vars);
+#pragma once
+
+#include "player.h"
+
+void RayLoop(player_t* pobj, render_t* render);

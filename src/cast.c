@@ -15,8 +15,13 @@
 */
 
 #include "draw.h"
-#include "../objects/player.h"
-#include <cmath>
+#include "cast.h"
+#include "player.h"
+#include "main.h"
+
+#include <math.h>
+
+#include "raylib.h"
 
 // https://lodev.org/cgtutor/raycasting.html
 void RayLoop(player_t* pobj, render_t* render)
@@ -52,24 +57,24 @@ void RayLoop(player_t* pobj, render_t* render)
         if(render->rayDirX < 0) // ray going west
         {
             render->stepX = -1;
-            render->sideDistX = (player->posX - mapX) * render->dxDist;
+            render->sideDistX = (pobj->posX - mapX) * render->dxDist;
         }
         else // ray going east
         {
             render->stepX = 1;
-            render->sideDistX = (mapX + 1.0f - player->posX) * render->dxDist;
+            render->sideDistX = (mapX + 1.0f - pobj->posX) * render->dxDist;
         }
 
         // VERTICAL
         if(render->rayDirY < 0) // ray going south
         {
             render->stepY = -1;
-            render->sideDistY = (player->posY - mapY) * render->dyDist;
+            render->sideDistY = (pobj->posY - mapY) * render->dyDist;
         }
         else // ray going north
         {
             render->stepY = 1;
-            render->sideDistY = (mapY + 1.0f - player->posY) * render->dyDist;
+            render->sideDistY = (mapY + 1.0f - pobj->posY) * render->dyDist;
         }
 
         // -- DDA --
@@ -102,5 +107,22 @@ void RayLoop(player_t* pobj, render_t* render)
         {
             render->perpendicularDist = render->sideDistY - render->dyDist;
         }
+
+        // center line on screen column
+        int lh = (int)(screenHeight / render->perpendicularDist);
+
+        // draw start, end
+        int ds = -lh / 2 + screenHeight / 2;
+        int de = lh / 2 + screenHeight / 2;
+
+        // cap low and high render positions
+        if(ds < 0)
+            ds = 0;
+        if(de >= screenHeight)
+            de = screenHeight - 1;
+
+        render->perpendicularDist = render->sideDistX - render->dxDist;
+
+        DrawLine(x, ds, x, de, VIOLET);
     }
 }
