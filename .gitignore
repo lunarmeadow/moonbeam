@@ -53,3 +53,15 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# clangd
+*.idx
+
+# cmake
+CMakeFiles/
+cmake-build*/
+build*/
+compile_commands.json
+CMakeCache.txt
+Makefile
+cmake_install.cmake
