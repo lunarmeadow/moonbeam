@@ -19,9 +19,28 @@ extern int screenHeight;
 extern int refreshRate;
 
 typedef struct renderVars {
+    // delta time stuff
     float time, oldtime;
     
     float camX;
+
+    // DDA step, once intersects are found, we can step {s | -1, 1} from intersection to rapidly traverse grid.
+    int stepX, stepY;
+
+    // projection plane
     float planeX, planeY;
+
     float rayDirX, rayDirY;
+
+    // delta of x and y distance
+    float dxDist, dyDist;
+
+    // length of ray perpendicular to hit (i recall this avoids fisheye)
+    float perpendicularDist;
+
+    // step to next side while traversing DDA.
+    float sideDistX, sideDistY;
+
+    // 0 = x, 1 = y
+    int hitSide;
 } render_t;

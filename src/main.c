@@ -23,7 +23,7 @@
 #define WORLD_WIDTH 16
 #define WORLD_HEIGHT 16
 
-uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT]=
+uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT] =
 {
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},

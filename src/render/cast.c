@@ -16,15 +16,91 @@
 
 #include "draw.h"
 #include "../objects/player.h"
+#include <cmath>
 
+// https://lodev.org/cgtutor/raycasting.html
 void RayLoop(player_t* pobj, render_t* render)
 {
+    int mapX, mapY;
+
+    // hit wall?
+    bool hasIntersect = false;
+
+    // casting to int truncates fractional value, no need to floor or divide etc
+    // this is used to step along tilemap from players position
+    mapX = (int)pobj->posX;
+    mapY = (int)pobj->posY;
+
     // cast ray for each horizontal pixel of screen
     for(int x = 0; x < screenWidth; x++)
     {
+        // -- BASIC PARAMETERS, GET POSITIONS AND ANGLES --
+
         render->camX = 2 * x / (float)screenWidth - 1;
-        
+
         render->rayDirX = pobj->angX + render->planeX * render->camX;
         render->rayDirY = pobj->angY + render->planeY * render->camX;
+        
+        // slower, verbose way to do this, but I want to be explicit as this is a learning project.
+        // deltaDistX = abs(1 / rayDirX) and deltaDistY = abs(1 / rayDirY) are faster
+        render->dxDist = sqrt(1 + pow(render->rayDirY, 2) / pow(render->rayDirX, 2));
+        render->dyDist = sqrt(1 + pow(render->rayDirX, 2) / pow(render->rayDirY, 2));
+
+        // -- FIND STEP ALONG ANGLE --
+
+        // HORIZONTAL
+        if(render->rayDirX < 0) // ray going west
+        {
+            render->stepX = -1;
+            render->sideDistX = (player->posX - mapX) * render->dxDist;
+        }
+        else // ray going east
+        {
+            render->stepX = 1;
+            render->sideDistX = (mapX + 1.0f - player->posX) * render->dxDist;
+        }
+
+        // VERTICAL
+        if(render->rayDirY < 0) // ray going south
+        {
+            render->stepY = -1;
+            render->sideDistY = (player->posY - mapY) * render->dyDist;
+        }
+        else // ray going north
+        {
+            render->stepY = 1;
+            render->sideDistY = (mapY + 1.0f - player->posY) * render->dyDist;
+        }
+
+        // -- DDA --
+
+        while(!hasIntersect)
+        {
+            if(render->sideDistX < render->sideDistY) // x step
+            {
+                render->sideDistX += render->dxDist;
+                mapX += render->stepX;
+                render->hitSide = 0;
+            }
+            else // y step
+            {
+                render->sideDistX += render->dxDist;
+                mapX += render->stepX;
+                render->hitSide = 1;
+            }
+
+            // stepping tile along x and y, once ray hits something we know we have a hit
+            if(worldMap[mapX][mapY] != 0)
+                hasIntersect = true;
+        }
+
+        if(render->hitSide = 0)
+        {
+            render->perpendicularDist = render->sideDistX - render->dxDist;
+        }
+        else if(render->hitSide = 1)
+        {
+            render->perpendicularDist = render->sideDistY - render->dyDist;
+        }
     }
 }
