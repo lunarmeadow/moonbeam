@@ -28,3 +28,8 @@ typedef struct {
 
 bool LoadPackFile();
 void ClosePackFile();
+
+void* MPK_GetLumpForName(const char* name);
+void* MPK_GetLumpForNum(int lumpnum);
+int MPK_GetLengthForLump(const char* name);
+int MPK_GetLengthForNum(int lumpnum);

@@ -21,8 +21,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef OPL_H_
 #define OPL_H_
 
-#include "rt_def.h"
-
 // typedef struct opl
 // {
 //     int oplChipNum;

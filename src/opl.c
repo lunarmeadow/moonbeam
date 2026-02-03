@@ -16,9 +16,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <adlmidi.h>
+#include <stdio.h>
 #include "opl.h"
+#include "raylib.h"
+#include <math.h>
+#include <string.h>
 
-static void OPLcallback(void *cbFunc, Uint8 *stream, int len);
+static void OPLcallback(void *stream, unsigned int frames);
 
 static bool isPlaying = 0;
 static bool isHooked = false;
@@ -27,8 +31,10 @@ static float volume = 0;
 
 static struct ADLMIDI_AudioFormat s_audioFormat;
 
-static Uint16                   obtained_format;
+// static Uint16                   obtained_format;
 static struct ADL_MIDIPlayer    *midi_player = NULL;
+
+static AudioStream audStream;
 
 // static int OPL_FetchConfig(void* user, const char* section, 
 //                             const char* name, const char* value)
@@ -191,7 +197,6 @@ void OPL_Init(void)
     // }
 
     // if(useoplmusic)
-        OPL_RegisterHook();
 }
 
 void OPL_Free(void)
@@ -242,7 +247,7 @@ void OPL_SetVolume(float newVol)
     // y = 10 * (newVol / 127) ^ 2
     // essentially, 0.0-10.0f scaled to square of volumescale
     float volumescale = newVol / 127;
-    volume = 10 * pow(volumescale, 2);
+    volume = 100 * pow(volumescale, 2);
 }
 
 int OPL_IsPlaying(void)
@@ -255,10 +260,19 @@ int OPL_IsHooked(void)
     return isHooked;
 }
 
-
-
 bool OPL_Play(char* buffer, int size, int loopflag)
 {
+    //reload
+    if(IsAudioStreamValid(audStream))
+    {
+        UnloadAudioStream(audStream);
+    }
+    else
+    {
+        audStream = LoadAudioStream(44100, 16, 2);
+        SetAudioStreamCallback(audStream, OPLcallback);
+    }
+
     if(adl_openData(midi_player, buffer, size) < 0)
     {
         fprintf(stderr, "Couldn't open music file: %s\n", adl_errorInfo(midi_player));
@@ -266,10 +280,13 @@ bool OPL_Play(char* buffer, int size, int loopflag)
         return false;
     }
 
+    OPL_SetVolume(50);
+
     adl_setLoopEnabled(midi_player, loopflag);
 
+    PlayAudioStream(audStream);
+
     isPlaying = true;
-    SDL_PauseAudio(0);
 
     return true;
 }
@@ -277,44 +294,31 @@ bool OPL_Play(char* buffer, int size, int loopflag)
 
 void OPL_Stop(void)
 {
+    StopAudioStream(audStream);
     isPlaying = false;
 }
 
 void OPL_Pause(void)
 {
+    PauseAudioStream(audStream);
     isPlaying = false;
 }
 
 
-static void OPLcallback(void *cbFunc, Uint8 *stream, int len)
+static void OPLcallback(void *stream, unsigned int frames)
 {
-    if (!isPlaying)
-      return;
+    short* out = (short*)stream;
+    uint32_t samples_count = frames * 2;
+    uint32_t decoded_samples = adl_play(midi_player, samples_count, out);
 
-    int samples_count = len / s_audioFormat.containerSize;
-
-    samples_count = adl_playFormat(cbFunc, samples_count,
-                                   stream,
-                                   stream + s_audioFormat.containerSize,
-                                   &s_audioFormat);
-
-    // assuming signed 16-bit due to that being used for Mix_OpenAudio
-    int16_t* sampleBuf = (int16_t*)stream;
-
-    for(int i = 0; i < samples_count; i++)
+    for(int i = 0; i < decoded_samples; i++)
     {
-        float clampVal = (float)sampleBuf[i] * volume;
+        float clampVal = (float)out[i] * volume;
 
         clampVal = clampVal > INT16_MAX ? INT16_MAX : 
                    clampVal < INT16_MIN ? INT16_MIN 
                    : clampVal;
         
-        sampleBuf[i] = (int16_t)clampVal;
-    }
-
-    if(samples_count <= 0)
-    {
-        isPlaying = false;
-        memset(stream, 0, len);
+        out[i] = (short)clampVal;
     }
 }

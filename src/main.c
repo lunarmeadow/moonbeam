@@ -23,6 +23,7 @@
 
 #include "archive.h"
 
+#include "opl.h"
 #include "raylib.h"
 
 uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT] =
@@ -57,6 +58,10 @@ int main()
     InitWindow(screenWidth, screenHeight, "Moonbeam");
     SetTargetFPS(refreshRate);
 
+    InitAudioDevice();
+    SetAudioStreamBufferSizeDefault(4096);
+    OPL_Init();
+
     if(!LoadPackFile())
     {
         ret_code = -1;
@@ -73,6 +78,8 @@ int main()
     ret_code = 0;
 
 shutdown:
+    CloseAudioDevice();
+    OPL_Free();
     ClosePackFile();
     CloseWindow();
     return ret_code;

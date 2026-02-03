@@ -63,6 +63,7 @@ set(SOURCES
 	${PROJECT_SOURCE_DIR}/src/gamestate.c
 	${PROJECT_SOURCE_DIR}/src/player.c
 	${PROJECT_SOURCE_DIR}/src/archive.c
+	${PROJECT_SOURCE_DIR}/src/opl.c
 )
 
 # BUILD TARGET CONFIG

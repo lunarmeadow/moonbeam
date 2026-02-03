@@ -19,6 +19,8 @@
 #include "cast.h"
 #include "draw.h"
 #include "main.h"
+#include "opl.h"
+#include "archive.h"
 
 player_t pobj;
 render_t rVars;
@@ -35,5 +37,8 @@ void GameLoop()
 void OnGameLoop()
 {
     PlayerInitialize(&pobj);
+
+    OPL_Play((char*)MPK_GetLumpForName("music.mid"), MPK_GetLengthForLump("music.mid"), true);
+
     loopfunc = GameLoop;
 }
