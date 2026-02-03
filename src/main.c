@@ -49,7 +49,7 @@ int main()
 {
     loopfunc = OnGameLoop;
 
-    InitWindow(screenWidth, screenHeight, "Raycaster");
+    InitWindow(screenWidth, screenHeight, "Moonbeam");
     SetTargetFPS(refreshRate);
 
     while (!WindowShouldClose())

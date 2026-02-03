@@ -1,9 +1,9 @@
 # partially adapted from barrett's cmake, thank you erysdren :3
 
 cmake_minimum_required(VERSION 3.11)
-project(raycaster
-	DESCRIPTION "An experimental raycaster built in C with raylib."
-	HOMEPAGE_URL "https://github.com/lunarmeadow/raycaster"
+project(moonbeam
+	DESCRIPTION "A 90s style raycasting game engine written in C with raylib"
+	HOMEPAGE_URL "https://github.com/lunarmeadow/moonbeam"
 	LANGUAGES C
 )
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -50,30 +50,30 @@ set(SOURCES
 
 # BUILD TARGET CONFIG
 
-add_executable(raycast ${SOURCES})
-target_link_libraries(raycast PRIVATE raylib)
-target_link_libraries(raycast PUBLIC $<$<BOOL:${USE_ASAN}>:ASAN::ASAN>)
+add_executable(moonbeam ${SOURCES})
+target_link_libraries(moonbeam PRIVATE raylib)
+target_link_libraries(moonbeam PUBLIC $<$<BOOL:${USE_ASAN}>:ASAN::ASAN>)
 
 # BUILD TYPES / COMPILE OPTIONS
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "CLANG")
-	target_compile_options(raycast PRIVATE -Wall -Wextra -Wshadow=compatible-local -Wpedantic -Wfatal-errors)
+	target_compile_options(moonbeam PRIVATE -Wall -Wextra -Wshadow=compatible-local -Wpedantic -Wfatal-errors)
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(raycast PRIVATE -g -O0)
+    target_compile_options(moonbeam PRIVATE -g -O0)
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_options(raycast PRIVATE -O2)
+    target_compile_options(moonbeam PRIVATE -O2)
 endif()
 
 if(WIN32)	
     if(MINGW)
-		target_link_options(raycast PRIVATE -static-libgcc -static-libstdc++ -static)
+		target_link_options(moonbeam PRIVATE -static-libgcc -static-libstdc++ -static)
 	endif()
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT WIN32)
-    target_link_options(raycast PRIVATE -rdynamic)
+    target_link_options(moonbeam PRIVATE -rdynamic)
 endif()
