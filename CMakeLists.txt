@@ -32,6 +32,15 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
   endif()
 endif()
 
+FetchContent_Declare(
+	miniz
+	GIT_REPOSITORY https://github.com/richgel999/miniz.git
+	GIT_TAG 3.1.0
+	EXCLUDE_FROM_ALL
+)
+
+FetchContent_MakeAvailable(miniz)
+
 # LIBRARY CONFIG
 
 add_library(ASAN::ASAN IMPORTED INTERFACE)
@@ -46,12 +55,13 @@ set(SOURCES
 	${PROJECT_SOURCE_DIR}/src/draw.c
 	${PROJECT_SOURCE_DIR}/src/gamestate.c
 	${PROJECT_SOURCE_DIR}/src/player.c
+	${PROJECT_SOURCE_DIR}/src/archive.c
 )
 
 # BUILD TARGET CONFIG
 
 add_executable(moonbeam ${SOURCES})
-target_link_libraries(moonbeam PRIVATE raylib)
+target_link_libraries(moonbeam PRIVATE raylib miniz)
 target_link_libraries(moonbeam PUBLIC $<$<BOOL:${USE_ASAN}>:ASAN::ASAN>)
 
 # BUILD TYPES / COMPILE OPTIONS

@@ -18,9 +18,11 @@
 #include <stdio.h>
 
 #include "gamestate.h"
-
 #include "draw.h"
 #include "main.h"
+
+#include "archive.h"
+
 #include "raylib.h"
 
 uint8_t worldMap[WORLD_WIDTH][WORLD_HEIGHT] =
@@ -47,10 +49,19 @@ void(*loopfunc)(void);
 
 int main()
 {
-    loopfunc = OnGameLoop;
+    int ret_code;
 
+    // set loop func to the transition state of the first state 
+    loopfunc = OnGameLoop;
+    
     InitWindow(screenWidth, screenHeight, "Moonbeam");
     SetTargetFPS(refreshRate);
+
+    if(!LoadPackFile())
+    {
+        ret_code = -1;
+        goto shutdown;
+    }
 
     while (!WindowShouldClose())
     {
@@ -59,7 +70,11 @@ int main()
         EndDrawing();
     }
 
-    CloseWindow();
+    ret_code = 0;
 
-    return 0;
+shutdown:
+    ClosePackFile();
+    CloseWindow();
+    return ret_code;
 }
+
