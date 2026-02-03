@@ -25,7 +25,10 @@ render_t rVars;
 
 void GameLoop()
 {
+    ClearBackground(BLACK);
+
     PlayerThink(&pobj);
+    ParallaxLoop(&pobj, &rVars);
     RayLoop(&pobj, &rVars);
 }
 

@@ -16,9 +16,7 @@
 
 #pragma once
 
-extern int screenWidth;
-extern int screenHeight;
-extern int refreshRate;
+#include "player.h"
 
 typedef struct renderVars {
     // delta time stuff
@@ -42,4 +40,13 @@ typedef struct renderVars {
 
     // 0 = x, 1 = y
     int hitSide;
+
+    // height of shortest cast
+    int minHeight;
 } render_t;
+
+extern int screenWidth;
+extern int screenHeight;
+extern int refreshRate;
+
+void ParallaxLoop(player_t* pobj, render_t* render);

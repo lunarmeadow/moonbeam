@@ -20,12 +20,15 @@
 #include "main.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #include "raylib.h"
 
 // https://lodev.org/cgtutor/raycasting.html
 void RayLoop(player_t* pobj, render_t* render)
 {
+    render->minHeight = screenHeight;
+
     // cast ray for each horizontal pixel of screen
     for(int x = 0; x < screenWidth; x++)
     {
@@ -117,6 +120,9 @@ void RayLoop(player_t* pobj, render_t* render)
         // center line on screen column
         int lh = (int)(screenHeight / render->perpendicularDist);
 
+        if(lh < render->minHeight)
+            render->minHeight = lh;
+
         // draw start, end
         int ds = (-lh / 2 + screenHeight / 2) + pobj->angZ;
         int de = (lh / 2 + screenHeight / 2) + pobj->angZ;
@@ -127,9 +133,65 @@ void RayLoop(player_t* pobj, render_t* render)
         if(de >= screenHeight)
             de = screenHeight - 1;
 
-        if(render->hitSide == 0)
-            DrawLine(x, ds, x, de, VIOLET);
-        else if(render->hitSide == 1)
-            DrawLine(x, ds, x, de, DARKPURPLE);
+        uint8_t shade = 0xA0;
+
+        if(render->hitSide == 1)
+            shade /= 2;
+
+        // Distance in tiles to max fadeout, normalized by shade darkness
+        int MAXFADETILES = 16;
+
+        uint8_t calc;
+        if(shade * (render->perpendicularDist/MAXFADETILES) > shade)
+            calc = 0;
+        else
+            calc = shade - shade * (render->perpendicularDist/MAXFADETILES);
+        
+        Color purple = {
+            (uint8_t)(calc),
+            (uint8_t)(0),
+            (uint8_t)(calc),
+            255
+        };
+
+        Color red = {
+            (uint8_t)(calc),
+            (uint8_t)(0),
+            (uint8_t)(0),
+            255
+        };
+        
+        Color green = {
+            (uint8_t)(0),
+            (uint8_t)(calc),
+            (uint8_t)(0),
+            255
+        };
+
+        Color blue = {
+            (uint8_t)(0),
+            (uint8_t)(0),
+            (uint8_t)(calc),
+            255
+        };
+
+        switch(worldMap[mapX][mapY])
+        {
+            case 1:
+                DrawLine(x, ds, x, de, purple);
+                break;
+            case 2:
+                DrawLine(x, ds, x, de, red);
+                break;
+            case 3:
+                DrawLine(x, ds, x, de, green);
+                break;
+            case 4:
+                DrawLine(x, ds, x, de, blue);
+                break;
+            default:
+                DrawLine(x, ds, x, de, purple);
+                break;
+        }
     }
 }

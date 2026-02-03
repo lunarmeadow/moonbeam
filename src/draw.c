@@ -14,6 +14,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-int screenWidth = 640;
-int screenHeight = 480;
+#include "player.h"
+#include "main.h"
+#include "cast.h"
+#include "draw.h"
+
+#include "raylib.h"
+
+int screenWidth = 1280;
+int screenHeight = 960;
 int refreshRate = 60;
+
+// draw "floors" and "ceilings"
+void ParallaxLoop(player_t* pobj, render_t* render)
+{
+    // 256 pixel overscan
+    int ceilingStart = -256;
+    int ceilingEnd = ((screenHeight / 2) + pobj->angZ) - (render->minHeight / 2) + 256;
+    int floorStart = (ceilingEnd - 256) + render->minHeight / 2;
+    int floorEnd = screenHeight + 256;
+
+    DrawRectangleGradientV(0, ceilingStart, screenWidth, ceilingEnd, GRAY, BLACK);
+    DrawRectangleGradientV(0, floorStart, screenWidth, floorEnd, BLACK, GRAY);
+}
