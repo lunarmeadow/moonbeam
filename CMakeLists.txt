@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.11)
 project(moonbeam
 	DESCRIPTION "A 90s style raycasting game engine written in C with raylib"
 	HOMEPAGE_URL "https://github.com/lunarmeadow/moonbeam"
-	LANGUAGES C
+	LANGUAGES C CXX
 )
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -39,7 +39,14 @@ FetchContent_Declare(
 	EXCLUDE_FROM_ALL
 )
 
-FetchContent_MakeAvailable(miniz)
+FetchContent_Declare(
+	adlmidi
+	GIT_REPOSITORY https://github.com/Wohlstand/libADLMIDI.git
+	GIT_TAG v1.6.1
+	EXCLUDE_FROM_ALL
+)
+
+FetchContent_MakeAvailable(miniz adlmidi)
 
 # LIBRARY CONFIG
 
@@ -61,7 +68,7 @@ set(SOURCES
 # BUILD TARGET CONFIG
 
 add_executable(moonbeam ${SOURCES})
-target_link_libraries(moonbeam PRIVATE raylib miniz)
+target_link_libraries(moonbeam PRIVATE raylib miniz ADLMIDI)
 target_link_libraries(moonbeam PUBLIC $<$<BOOL:${USE_ASAN}>:ASAN::ASAN>)
 
 # BUILD TYPES / COMPILE OPTIONS
